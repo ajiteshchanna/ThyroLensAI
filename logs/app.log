@@ -1,0 +1,68 @@
+2026-02-18 16:49:59 - thyroid_app - INFO - load_model:31 - Loading model from Hugging Face...
+2026-02-18 16:50:01 - thyroid_app - INFO - load_model:38 - Model loaded successfully
+16:57:03 - INFO - app - Starting Thyroid Cancer Detection API...
+16:57:08 - INFO - routes - Loading model from Hugging Face...
+16:57:10 - INFO - routes - Model loaded successfully
+17:01:01 - INFO - streamlit_app - Loading model for Streamlit...
+17:01:03 - INFO - streamlit_app - Streamlit model loaded successfully
+17:01:50 - INFO - streamlit_app - Image uploaded in Streamlit: 571906608_18405720310186194_3563563807102114206_n.jpg (1080×1080) - Google Chrome 11_23_2025 3_03_54 PM.png
+17:01:50 - INFO - processing - Preprocessing image of size: (1920, 1078) and mode: RGBA
+17:01:52 - INFO - report_generator - Generating DOCX report for label: Benign (Non-Cancerous)
+17:03:33 - INFO - streamlit_app - Loading model for Streamlit...
+17:03:35 - INFO - streamlit_app - Streamlit model loaded successfully
+17:03:42 - INFO - streamlit_app - Image uploaded in Streamlit: 571906608_18405720310186194_3563563807102114206_n.jpg (1080×1080) - Google Chrome 11_23_2025 3_03_54 PM.png
+17:03:42 - INFO - processing - Preprocessing image of size: (1920, 1078) and mode: RGBA
+17:03:43 - INFO - report_generator - Generating DOCX report for label: Benign (Non-Cancerous)
+17:49:36 - INFO - streamlit_app - Loading model for Streamlit...
+17:49:38 - INFO - streamlit_app - Streamlit model loaded successfully
+17:51:13 - INFO - streamlit_app - Image uploaded in Streamlit: 0 non cancer.jpg
+17:51:13 - INFO - processing - Preprocessing image of size: (279, 268) and mode: L
+17:51:14 - INFO - report_generator - Generating DOCX report for label: Benign (Non-Cancerous)
+17:51:26 - INFO - streamlit_app - Image uploaded in Streamlit: 0 non cancer.jpg
+17:51:26 - INFO - processing - Preprocessing image of size: (279, 268) and mode: L
+17:51:26 - INFO - report_generator - Generating DOCX report for label: Benign (Non-Cancerous)
+18:02:11 - INFO - app - Starting Thyroid Cancer Detection API...
+18:02:17 - INFO - routes - Loading model from Hugging Face...
+18:02:19 - INFO - routes - Model loaded successfully
+18:03:13 - INFO - routes - Analyze request received for file: 1 cancer.jpg
+18:03:13 - INFO - processing - Preprocessing image of size: (480, 352) and mode: L
+18:03:39 - INFO - routes - Report request received for file: 1 cancer.jpg
+18:03:39 - INFO - processing - Preprocessing image of size: (480, 352) and mode: L
+18:03:39 - INFO - report_generator - Generating DOCX report for label: Malignant (Cancerous)
+18:34:47 - INFO - app - Starting Thyroid Cancer Detection API...
+18:34:52 - INFO - routes - Loading model from Hugging Face...
+18:34:54 - INFO - streamlit_app - Loading model for Streamlit...
+18:34:55 - INFO - routes - Model loaded successfully
+18:34:56 - INFO - streamlit_app - Streamlit model loaded successfully
+18:39:36 - INFO - routes - Analyze request received for file: 0 non cancer.jpg
+18:39:36 - INFO - processing - Preprocessing image of size: (279, 268) and mode: L
+18:39:54 - INFO - routes - Report request received for file: 0 non cancer.jpg
+18:39:54 - INFO - processing - Preprocessing image of size: (279, 268) and mode: L
+18:39:54 - INFO - report_generator - Generating DOCX report for label: Benign (Non-Cancerous)
+18:40:23 - INFO - streamlit_app - Image uploaded in Streamlit: 1 cancer.jpg
+18:40:23 - INFO - processing - Preprocessing image of size: (480, 352) and mode: L
+18:40:24 - INFO - report_generator - Generating DOCX report for label: Malignant (Cancerous)
+20:09:03 - INFO - app - Starting Thyroid Cancer Detection API...
+20:09:09 - INFO - routes - Loading model from Hugging Face...
+20:09:12 - INFO - routes - Model loaded successfully
+20:14:29 - INFO - routes - Analyze request received for file: Gemini_Generated_Image_cyltfqcyltfqcylt.png
+20:14:29 - INFO - processing - Preprocessing image of size: (744, 755) and mode: RGBA
+20:15:10 - INFO - routes - Analyze request received for file: 1 cancer.jpg
+20:15:10 - INFO - processing - Preprocessing image of size: (480, 352) and mode: L
+20:17:04 - INFO - routes - Loading model from Hugging Face...
+20:17:06 - INFO - routes - Model loaded successfully
+20:17:32 - INFO - routes - Report request received for file: 1 cancer.jpg
+20:17:32 - INFO - processing - Preprocessing image of size: (480, 352) and mode: L
+20:17:33 - INFO - report_generator - Generating enhanced medical report for: Malignant (Cancerous)
+03:03:09 - INFO - app - Starting Thyroid Cancer Detection API...
+03:03:13 - INFO - routes - Loading model from Hugging Face...
+03:03:26 - INFO - routes - Model loaded successfully
+03:15:14 - INFO - app - Starting Thyroid Cancer Detection API...
+03:15:20 - INFO - routes - Loading model from Hugging Face...
+03:15:26 - INFO - routes - Model loaded successfully
+03:15:58 - INFO - routes - Analyze request received for file: 1 cancer.jpg
+03:15:58 - INFO - processing - Preprocessing image of size: (480, 352) and mode: L
+03:16:00 - WARNING - routes - Grad-CAM generation failed: module 'matplotlib.cm' has no attribute 'get_cmap'
+03:16:11 - INFO - routes - Report request received for file: 1 cancer.jpg
+03:16:11 - INFO - processing - Preprocessing image of size: (480, 352) and mode: L
+03:16:12 - INFO - report_generator - Generating enhanced medical report for: Malignant (Cancerous)

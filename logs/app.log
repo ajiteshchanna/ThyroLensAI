@@ -66,3 +66,53 @@
 03:16:11 - INFO - routes - Report request received for file: 1 cancer.jpg
 03:16:11 - INFO - processing - Preprocessing image of size: (480, 352) and mode: L
 03:16:12 - INFO - report_generator - Generating enhanced medical report for: Malignant (Cancerous)
+02:21:18 - INFO - app - Starting Thyroid Cancer Detection API...
+02:21:26 - INFO - routes - Loading model from Hugging Face...
+02:21:30 - INFO - routes - Model loaded successfully
+02:37:33 - INFO - routes - Analyze request received for file: 1 cancer.jpg
+02:37:34 - INFO - processing - Preprocessing image of size: (480, 352) and mode: L
+02:37:35 - WARNING - routes - Grad-CAM generation failed: module 'matplotlib.cm' has no attribute 'get_cmap'
+02:37:52 - INFO - routes - Analyze request received for file: 1 cancer.jpg
+02:37:52 - INFO - processing - Preprocessing image of size: (480, 352) and mode: L
+02:37:53 - WARNING - routes - Grad-CAM generation failed: module 'matplotlib.cm' has no attribute 'get_cmap'
+02:04:41 - INFO - app - Starting Thyroid Cancer Detection API...
+02:04:49 - INFO - routes - Loading model from Hugging Face...
+02:04:57 - INFO - routes - Model loaded successfully
+17:42:52 - INFO - app - Starting Thyroid Cancer Detection API...
+17:43:01 - INFO - routes - Loading model from Hugging Face...
+17:43:10 - INFO - routes - Model loaded successfully
+17:43:59 - INFO - routes - Analyze request received for file: 1 cancer.jpg
+17:43:59 - INFO - processing - Preprocessing image of size: (480, 352) and mode: L
+17:44:01 - WARNING - routes - Grad-CAM generation failed: module 'matplotlib.cm' has no attribute 'get_cmap'
+01:13:27 - INFO - app - Starting Thyroid Cancer Detection API...
+01:13:31 - INFO - routes - Loading model from Hugging Face...
+01:13:37 - INFO - routes - Model loaded successfully
+01:43:25 - INFO - app - Starting Thyroid Cancer Detection API...
+01:43:29 - INFO - routes - Loading model from Hugging Face...
+01:43:30 - INFO - routes - Model loaded successfully
+01:43:47 - INFO - routes - Analyze request received for file: 1 cancer.jpg
+01:43:47 - INFO - processing - Preprocessing image of size: (480, 352) and mode: L
+01:43:47 - ERROR - routes - Grad-CAM generation failed: list indices must be integers or slices, not tuple
+Traceback (most recent call last):
+  File "D:\ENGINEER\CancerDetection\RESOURCES\CODE SRC\backend\routes.py", line 96, in analyze
+    heatmap = make_gradcam_heatmap(processed_img, MODEL, last_conv)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\ENGINEER\CancerDetection\RESOURCES\CODE SRC\utils\gradcam.py", line 46, in make_gradcam_heatmap
+    class_channel = preds[:, pred_index]  # shape (1,)
+                    ~~~~~^^^^^^^^^^^^^^^
+TypeError: list indices must be integers or slices, not tuple
+
+01:47:11 - INFO - routes - Loading model from Hugging Face...
+01:47:12 - INFO - routes - Model loaded successfully
+01:47:46 - INFO - routes - Loading model from Hugging Face...
+01:47:47 - INFO - routes - Model loaded successfully
+01:47:57 - INFO - processing - Preprocessing image of size: (480, 352) and mode: L
+01:48:50 - INFO - routes - Analyze request received for file: 0 non cancer.jpg
+01:48:50 - INFO - processing - Preprocessing image of size: (279, 268) and mode: L
+01:48:51 - INFO - routes - Grad-CAM generated successfully using layer: depthwise_separable_conv_1
+01:49:02 - INFO - routes - Analyze request received for file: 1 cancer.jpg
+01:49:02 - INFO - processing - Preprocessing image of size: (480, 352) and mode: L
+01:49:02 - INFO - routes - Grad-CAM generated successfully using layer: depthwise_separable_conv_1
+01:49:46 - INFO - routes - Analyze request received for file: 1 cancer.jpg
+01:49:46 - INFO - processing - Preprocessing image of size: (480, 352) and mode: L
+01:49:47 - INFO - routes - Grad-CAM generated successfully using layer: depthwise_separable_conv_1

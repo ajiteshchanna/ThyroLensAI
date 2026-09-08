@@ -3,6 +3,7 @@ from fastapi.responses import HTMLResponse, StreamingResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 import io
 import base64
+import traceback
 import numpy as np
 from PIL import Image
 import tensorflow as tf
@@ -83,14 +84,24 @@ async def analyze(file: UploadFile = File(...)):
     # Grad-CAM
     gradcam_b64 = None
     try:
-        last_conv = next((l.name for l in MODEL.layers[::-1] if "depthwise_separable_conv" in l.name), None)
-        if last_conv:
+        # Search from the end of the model for the last DepthwiseSeparableConv layer.
+        # This is the final spatial feature map (7x7x377) before GlobalAveragePooling2D.
+        last_conv = next(
+            (l.name for l in MODEL.layers[::-1] if "depthwise_separable_conv" in l.name.lower()),
+            None
+        )
+        if last_conv is None:
+            logger.error("Grad-CAM: Could not find a 'depthwise_separable_conv' layer in model.")
+        else:
             heatmap = make_gradcam_heatmap(processed_img, MODEL, last_conv)
             if heatmap is not None:
                 gradcam_img = save_and_display_gradcam(image, heatmap)
                 gradcam_b64 = get_image_base64(gradcam_img)
+                logger.info(f"Grad-CAM generated successfully using layer: {last_conv}")
+            else:
+                logger.error("Grad-CAM: make_gradcam_heatmap returned None.")
     except Exception as e:
-        logger.warning(f"Grad-CAM generation failed: {e}")
+        logger.error(f"Grad-CAM generation failed: {e}\n{traceback.format_exc()}")
 
     return {
         "label": "Malignant (Cancerous)" if is_malignant else "Benign (Non-Cancerous)",
@@ -123,10 +134,13 @@ async def get_report(file: UploadFile = File(...)):
         label = "Malignant (Cancerous)" if is_malignant else "Benign (Non-Cancerous)"
         conf_percent = score * 100 if is_malignant else (1 - score) * 100
         
-        # Re-Run Grad-CAM
+        # Re-Run Grad-CAM for report
         gradcam_bytes = None
         try:
-            last_conv = next((l.name for l in MODEL.layers[::-1] if "depthwise_separable_conv" in l.name), None)
+            last_conv = next(
+                (l.name for l in MODEL.layers[::-1] if "depthwise_separable_conv" in l.name.lower()),
+                None
+            )
             if last_conv:
                 heatmap = make_gradcam_heatmap(processed_img, MODEL, last_conv)
                 if heatmap is not None:
@@ -134,8 +148,9 @@ async def get_report(file: UploadFile = File(...)):
                     gradcam_bytes = io.BytesIO()
                     gradcam_img.save(gradcam_bytes, format='PNG')
                     gradcam_bytes.seek(0)
-        except Exception:
-            pass
+                    logger.info(f"Grad-CAM for report generated using layer: {last_conv}")
+        except Exception as e:
+            logger.error(f"Grad-CAM for report failed: {e}\n{traceback.format_exc()}")
 
         # Prepare Original Image Bytes
         img_bytes = io.BytesIO()

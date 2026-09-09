@@ -17,7 +17,7 @@ An AI-powered web application for detecting thyroid cancer from medical images u
 ```
 Thyroid new/
 ├── app.py                      # FastAPI entry point
-├── app_streamlit.py            # Streamlit application
+├── streamlit_app.py            # Streamlit application
 ├── model_architecture.py       # Custom neural network layers
 ├── requirements.txt            # Python dependencies
 ├── backend/
@@ -33,6 +33,8 @@ Thyroid new/
 │   ├── processing.py          # Image preprocessing
 │   ├── gradcam.py             # Grad-CAM implementation
 │   ├── report_generator.py   # DOCX report generation
+│   ├── image_quality.py      # Deterministic input quality checks
+│   ├── reliability.py        # AI reliability assessment
 │   └── logger.py              # Logging configuration
 └── logs/
     └── app.log                # Application logs
@@ -91,7 +93,7 @@ Thyroid new/
 
 1. **Run Streamlit**
    ```bash
-   streamlit run app_streamlit.py
+   streamlit run streamlit_app.py
    ```
 
 2. **Access dashboard**
@@ -108,6 +110,26 @@ Thyroid new/
 **Input**: 224x224 RGB images  
 **Output**: Binary classification (Benign/Malignant)
 
+## Trustworthy AI Reliability Assessment
+
+The **AI Reliability Score** is a technical, engineering-level assessment of how much reliance
+should be placed on the current model output given the available signals. It is **not** a cancer
+probability, patient risk score, diagnostic risk, or clinically validated measure.
+
+The current score combines:
+
+```
+reliability = 0.60 * model certainty + 0.40 * image quality
+```
+
+Model certainty is `abs(model_score - 0.5) * 2`. Image quality combines resolution,
+brightness, contrast, and sharpness checks. Reliability thresholds are `HIGH >= 80`,
+`MODERATE >= 60`, and `LOW < 60`; these are engineering heuristics, not clinical thresholds.
+
+Input similarity/OOD detection and probability calibration currently return `NOT_EVALUATED`.
+No values are fabricated for those signals. The system is decision support and requires human
+clinical review; it must not be used as a standalone diagnosis.
+
 ## 📊 API Endpoints
 
 ### `POST /analyze`
@@ -120,11 +142,20 @@ Analyzes uploaded image and returns prediction with Grad-CAM.
 {
   "label": "Malignant (Cancerous)",
   "score": 0.9876,
-  "percent": 98.76,
+   "percent": 98.76,
+   "model_score_percent": 98.76,
   "class_id": 1,
   "is_malignant": true,
   "original_image": "base64...",
-  "gradcam_image": "base64..."
+   "gradcam_image": "base64...",
+   "reliability": {
+      "score": 86,
+      "level": "HIGH",
+      "model_certainty": {"score": 0.98, "level": "HIGH"},
+      "image_quality": {"score": 0.91, "level": "GOOD", "warnings": []},
+      "ood": {"status": "NOT_EVALUATED"},
+      "calibration": {"status": "NOT_EVALUATED"}
+   }
 }
 ```
 

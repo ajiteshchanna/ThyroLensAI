@@ -16,6 +16,8 @@ from utils.model_architecture import Avg2MaxPooling, DepthwiseSeparableConv
 from utils.processing import preprocess_image
 from utils.gradcam import make_gradcam_heatmap, save_and_display_gradcam
 from utils.report_generator import generate_docx_report
+from utils.image_quality import assess_image_quality
+from utils.reliability import calculate_reliability
 
 # Create Router
 router = APIRouter()
@@ -45,6 +47,36 @@ def get_image_base64(image):
     buffered = io.BytesIO()
     image.save(buffered, format="PNG")
     return base64.b64encode(buffered.getvalue()).decode("utf-8")
+
+
+def _calculate_reliability(image, score):
+    """Keep reliability failures isolated from prediction and Grad-CAM."""
+    try:
+        image_quality = assess_image_quality(image)
+        logger.info(
+            "Image quality: %s (%.2f)",
+            image_quality["quality_level"],
+            image_quality["quality_score"],
+        )
+        reliability = calculate_reliability(score, image_quality)
+        logger.info(
+            "Model certainty: %s (%.2f)",
+            reliability["model_certainty"]["level"],
+            reliability["model_certainty"]["score"],
+        )
+        logger.info("AI reliability: %d/100 (%s)", reliability["score"], reliability["level"])
+        return reliability
+    except Exception as exc:
+        logger.error("Reliability assessment failed: %s\n%s", exc, traceback.format_exc())
+        return {
+            "score": None,
+            "level": "NOT_AVAILABLE",
+            "model_certainty": {"score": None, "level": "NOT_AVAILABLE"},
+            "image_quality": {"score": None, "level": "NOT_AVAILABLE", "warnings": []},
+            "ood": {"status": "NOT_EVALUATED"},
+            "calibration": {"status": "NOT_EVALUATED"},
+            "recommendation": "Reliability assessment unavailable. Clinical review is required.",
+        }
 
 # --- Routes ---
 
@@ -103,14 +135,18 @@ async def analyze(file: UploadFile = File(...)):
     except Exception as e:
         logger.error(f"Grad-CAM generation failed: {e}\n{traceback.format_exc()}")
 
+    reliability = _calculate_reliability(image, score)
     return {
-        "label": "Malignant (Cancerous)" if is_malignant else "Benign (Non-Cancerous)",
+        "label": "Malignant" if is_malignant else "Benign",
         "score": score,
         "percent": score * 100 if is_malignant else (1 - score) * 100,
+        "model_score_percent": score * 100,
+        "confidence_percent": score * 100 if is_malignant else (1 - score) * 100,
         "class_id": 1 if is_malignant else 0,
         "is_malignant": is_malignant,
         "original_image": get_image_base64(image),
-        "gradcam_image": gradcam_b64
+        "gradcam_image": gradcam_b64,
+        "reliability": reliability,
     }
 
 @router.post("/report")
@@ -131,8 +167,9 @@ async def get_report(file: UploadFile = File(...)):
         preds = MODEL.predict(processed_img)
         score = float(preds[0][0])
         is_malignant = score > 0.5
-        label = "Malignant (Cancerous)" if is_malignant else "Benign (Non-Cancerous)"
+        label = "Malignant" if is_malignant else "Benign"
         conf_percent = score * 100 if is_malignant else (1 - score) * 100
+        reliability = _calculate_reliability(image, score)
         
         # Re-Run Grad-CAM for report
         gradcam_bytes = None
@@ -163,7 +200,8 @@ async def get_report(file: UploadFile = File(...)):
             prediction_label=label,
             confidence_score=score,
             confidence_percent=conf_percent,
-            gradcam_buffer=gradcam_bytes
+            gradcam_buffer=gradcam_bytes,
+            reliability=reliability,
         )
         report_buffer.seek(0)
         

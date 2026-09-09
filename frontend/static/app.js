@@ -35,6 +35,7 @@ function showAlert(message, type = 'info') {
 dropZone.addEventListener('drop', e => {
     const dt = e.dataTransfer;
     const files = dt.files;
+    if (files.length) fileInput.files = files;
     handleFiles(files);
 });
 
@@ -66,14 +67,32 @@ async function handleFiles(files) {
 
         // Update Images
         document.getElementById('originalImg').src = `data:image/png;base64,${result.original_image}`;
-        document.getElementById('gradcamImg').src = `data:image/png;base64,${result.gradcam_image}`;
+        const gradcamImg = document.getElementById('gradcamImg');
+        gradcamImg.src = result.gradcam_image ? `data:image/png;base64,${result.gradcam_image}` : '';
+        gradcamImg.alt = result.gradcam_image ? 'Attention Heatmap' : 'Grad-CAM unavailable';
 
         // Update Metrics
         predBadge.textContent = result.label;
         predBadge.className = `prediction-badge ${result.is_malignant ? 'malignant' : 'benign'}`;
 
+        document.getElementById('modelScore').textContent = (result.model_score_percent ?? result.score * 100).toFixed(2) + "%";
         document.getElementById('confPercent').textContent = result.percent.toFixed(2) + "%";
         document.getElementById('classId').textContent = result.class_id;
+
+        const reliability = result.reliability || {};
+        const level = reliability.level || 'NOT_AVAILABLE';
+        const score = reliability.score;
+        document.getElementById('reliabilityScore').textContent = score == null ? 'Not available' : `${score} / 100`;
+        const levelElement = document.getElementById('reliabilityLevel');
+        levelElement.textContent = level;
+        levelElement.className = `reliability-level ${level.toLowerCase()}`;
+        const certainty = reliability.model_certainty?.score;
+        const quality = reliability.image_quality?.score;
+        document.getElementById('certaintyValue').textContent = certainty == null ? 'Not evaluated' : `${Math.round(certainty * 100)}%`;
+        document.getElementById('qualityValue').textContent = quality == null ? 'Not evaluated' : `${Math.round(quality * 100)}% (${reliability.image_quality.level})`;
+        document.getElementById('certaintyBar').style.width = certainty == null ? '0%' : `${certainty * 100}%`;
+        document.getElementById('qualityBar').style.width = quality == null ? '0%' : `${quality * 100}%`;
+        document.getElementById('recommendation').textContent = reliability.recommendation || 'Clinical review is required.';
 
         // Show Results with Animation
         loader.style.display = 'none';

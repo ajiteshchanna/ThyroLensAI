@@ -116,3 +116,20 @@ TypeError: list indices must be integers or slices, not tuple
 01:49:46 - INFO - routes - Analyze request received for file: 1 cancer.jpg
 01:49:46 - INFO - processing - Preprocessing image of size: (480, 352) and mode: L
 01:49:47 - INFO - routes - Grad-CAM generated successfully using layer: depthwise_separable_conv_1
+
+15:41:45 - INFO - app - Starting Thyroid Cancer Detection API...
+15:41:49 - INFO - routes - Loading model from Hugging Face...
+15:41:50 - INFO - routes - Model loaded successfully
+15:42:02 - INFO - routes - Analyze request received for file: 1 cancer.jpg
+15:42:02 - INFO - processing - Preprocessing image of size: (480, 352) and mode: L
+15:42:04 - INFO - routes - Grad-CAM generated successfully using layer: depthwise_separable_conv_1
+15:42:04 - INFO - routes - Image quality: GOOD (0.93)
+15:42:04 - INFO - routes - Model certainty: MODERATE (0.52)
+15:42:04 - INFO - routes - AI reliability: 69/100 (MODERATE)
+15:42:13 - INFO - routes - Report request received for file: 1 cancer.jpg
+15:42:13 - INFO - processing - Preprocessing image of size: (480, 352) and mode: L
+15:42:13 - INFO - routes - Image quality: GOOD (0.93)
+15:42:13 - INFO - routes - Model certainty: MODERATE (0.52)
+15:42:13 - INFO - routes - AI reliability: 68/100 (MODERATE)
+15:42:14 - INFO - routes - Grad-CAM for report generated using layer: depthwise_separable_conv_1
+15:42:14 - INFO - report_generator - Generating enhanced medical report for: Malignant

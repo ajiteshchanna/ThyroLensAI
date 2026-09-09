@@ -25,7 +25,7 @@
     <main>
         <section class="hero" id="home">
             <h1>Precision Thyroid <br>Diagnostics</h1>
-            <p>Empowering clinicians with Fibonacci-scaled neural networks for deep thyroid nodule analysis.</p>
+            <p>AI decision support with transparent technical reliability signals for thyroid image review.</p>
 
             <div class="dz-container">
                 <div class="drop-zone" id="dropZone">
@@ -61,7 +61,12 @@
                         <div class="prediction-badge" id="predBadge">Analyzing...</div>
                         
                         <div class="metric-box">
-                            <p class="metric-label">Confidence Probability</p>
+                            <p class="metric-label">Model Score</p>
+                            <p class="metric-value" id="modelScore">0.00%</p>
+                        </div>
+
+                        <div class="metric-box">
+                            <p class="metric-label">Class-relative Score</p>
                             <p class="metric-value" id="confPercent">0.00%</p>
                         </div>
 
@@ -70,6 +75,29 @@
                             <p class="metric-value" id="classId">-</p>
                         </div>
                     </div>
+                </div>
+
+                <!-- Reliability -->
+                <div class="card reliability-card">
+                    <h3>AI Reliability</h3>
+                    <div class="reliability-summary" id="reliabilitySummary">
+                        <strong id="reliabilityScore">- / 100</strong>
+                        <span id="reliabilityLevel" class="reliability-level">Not available</span>
+                    </div>
+                    <p class="reliability-note">Technical reliability assessment, not cancer probability.</p>
+                    <div class="reliability-factors">
+                        <div class="factor-row"><span>Model Certainty</span><strong id="certaintyValue">Not evaluated</strong></div>
+                        <div class="factor-bar"><span id="certaintyBar"></span></div>
+                        <div class="factor-row"><span>Image Quality</span><strong id="qualityValue">Not evaluated</strong></div>
+                        <div class="factor-bar"><span id="qualityBar"></span></div>
+                        <div class="factor-row"><span>Input Similarity</span><strong>Not evaluated</strong></div>
+                        <div class="factor-row"><span>Calibration</span><strong>Not evaluated</strong></div>
+                    </div>
+                    <div class="recommendation-box">
+                        <p class="metric-label">AI Decision Support</p>
+                        <p id="recommendation">Clinical review is required.</p>
+                    </div>
+                    <p class="safety-notice">This AI-generated result is intended to assist assessment and should not be used as a standalone diagnosis.</p>
                 </div>
 
                 <!-- Heatmap -->

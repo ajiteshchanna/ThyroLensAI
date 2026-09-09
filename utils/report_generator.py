@@ -22,7 +22,8 @@ def set_cell_margins(cell, **kwargs):
             tcMar.append(node)
     tcPr.append(tcMar)
 
-def generate_docx_report(image_buffer, prediction_label, confidence_score, confidence_percent, gradcam_buffer=None):
+def generate_docx_report(image_buffer, prediction_label, confidence_score, confidence_percent,
+                         gradcam_buffer=None, reliability=None):
     """
     Generates a professional DOCX report for thyroid cancer detection.
     """
@@ -55,7 +56,7 @@ def generate_docx_report(image_buffer, prediction_label, confidence_score, confi
     doc.add_heading('1. Analysis Executive Summary', level=1)
     
     # Summary Table
-    table = doc.add_table(rows=4, cols=2)
+    table = doc.add_table(rows=8, cols=2)
     table.style = 'Table Grid'
     
     def fill_row(row_idx, label, value, is_bold_val=False):
@@ -68,10 +69,16 @@ def generate_docx_report(image_buffer, prediction_label, confidence_score, confi
         set_cell_margins(row.cells[0], start=100)
         set_cell_margins(row.cells[1], start=100)
 
-    fill_row(0, "Diagnostic Determination", prediction_label.upper(), True)
-    fill_row(1, "Probability Coefficient", f"{confidence_score:.4f}")
-    fill_row(2, "Confidence Level", f"{confidence_percent:.2f}%")
-    fill_row(3, "Neural Network ID", "FibonacciNet-v1 (ResNet-DWSC)")
+    reliability = reliability or {}
+    image_quality = reliability.get("image_quality", {})
+    fill_row(0, "AI Classification", prediction_label.upper(), True)
+    fill_row(1, "Model Score", f"{confidence_score:.4f}")
+    fill_row(2, "Class-relative Score", f"{confidence_percent:.2f}%")
+    fill_row(3, "AI Reliability Score", f"{reliability.get('score', 'Not available')} / 100")
+    fill_row(4, "Reliability Level", reliability.get("level", "Not available"))
+    fill_row(5, "Image Quality", image_quality.get("level", "Not available"))
+    fill_row(6, "Input Similarity", reliability.get("ood", {}).get("status", "NOT_EVALUATED"))
+    fill_row(7, "Calibration", reliability.get("calibration", {}).get("status", "NOT_EVALUATED"))
 
     # Color the determination cell
     if "Malignant" in prediction_label:
@@ -81,8 +88,17 @@ def generate_docx_report(image_buffer, prediction_label, confidence_score, confi
 
     doc.add_paragraph() # Spacer
     
+    doc.add_heading('2. AI Reliability Assessment', level=1)
+    doc.add_paragraph(
+        "The AI Reliability Score is an engineering-level assessment of technical signals available "
+        "for this analysis. It is not a cancer probability, diagnostic risk, or clinically validated score."
+    )
+    doc.add_paragraph(
+        f"Recommendation: {reliability.get('recommendation', 'Clinical review is required.') }"
+    )
+
     # 4. Medical Imaging Section
-    doc.add_heading('2. Diagnostic Imaging & Interpretability', level=1)
+    doc.add_heading('3. Diagnostic Imaging & Interpretability', level=1)
     
     # Create side-by-side or stacked layout
     # Since side-by-side can be tricky in docx without complex tables, we'll do structured stacking
@@ -107,12 +123,13 @@ def generate_docx_report(image_buffer, prediction_label, confidence_score, confi
 
     # 5. Technical Synopsis
     doc.add_page_break()
-    doc.add_heading('3. Technical Methodology', level=1)
+    doc.add_heading('4. Technical Methodology', level=1)
     doc.add_paragraph(
-        "This diagnostic analysis was performed using ThyroCheck AI's proprietary FibonacciNet architecture. "
+        "This AI assessment was performed using ThyroCheck AI's FibonacciNet architecture. "
         "The model utilizes Fibonacci-scaled filter counts (21, 34, 55, 89, 144, 233, 377) and Partial Connection "
         "Blocks (PCB) for optimal feature extraction from medical ultrasound signals. Interpretability is "
-        "provided via Gradient-weighted Class Activation Mapping (Grad-CAM)."
+        "provided via Gradient-weighted Class Activation Mapping (Grad-CAM). Image quality uses resolution, "
+        "brightness, contrast, and sharpness checks. Calibration and input similarity were not evaluated."
     )
     
     # 6. Disclaimer Header

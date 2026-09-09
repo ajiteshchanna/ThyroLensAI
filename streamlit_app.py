@@ -18,6 +18,8 @@ from utils.gradcam import make_gradcam_heatmap, save_and_display_gradcam
 from utils.report_generator import generate_docx_report
 from utils.model_architecture import Avg2MaxPooling, DepthwiseSeparableConv
 from utils.logger import logger
+from utils.image_quality import assess_image_quality
+from utils.reliability import calculate_reliability
 
 # --- Page Config ---
 st.set_page_config(page_title="Thyroid Cancer Detection", page_icon="🧬", layout="centered")
@@ -68,6 +70,8 @@ def main():
             
             label = "Malignant (Cancerous)" if is_cancer else "Benign (Non-Cancerous)"
             conf_percent = score * 100 if is_cancer else (1 - score) * 100
+            image_quality = assess_image_quality(image)
+            reliability = calculate_reliability(score, image_quality)
             
             # Display Results
             st.markdown("---")
@@ -75,8 +79,14 @@ def main():
             c1, c2 = st.columns(2)
             c1.metric("Prediction", label)
             c1.metric("Class", "1" if is_cancer else "0")
-            c2.metric("Confidence Score", f"{score:.4f}")
-            c2.metric("Confidence %", f"{conf_percent:.2f}%")
+            c2.metric("Model Score", f"{score:.4f}")
+            c2.metric("Class-relative Score", f"{conf_percent:.2f}%")
+            st.markdown("### AI Reliability")
+            st.metric("AI Reliability Score", f"{reliability['score']} / 100")
+            st.write(f"Reliability level: **{reliability['level']}**")
+            st.write(f"Model certainty: {reliability['model_certainty']['score']:.0%}")
+            st.write(f"Image quality: {image_quality['quality_level']} ({image_quality['quality_score']:.0%})")
+            st.caption("Calibration and input similarity: NOT_EVALUATED. This is technical decision support, not a standalone diagnosis.")
             
             # 2. Grad-CAM
             st.markdown("---")
@@ -112,7 +122,7 @@ def main():
                 gradcam_img.save(grad_bytes, format='PNG')
                 grad_bytes.seek(0)
                 
-                report = generate_docx_report(img_bytes, label, score, conf_percent, grad_bytes)
+                report = generate_docx_report(img_bytes, label, score, conf_percent, grad_bytes, reliability)
                 
                 st.download_button(
                     label="Download Report (DOCX)",

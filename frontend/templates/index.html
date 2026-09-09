@@ -79,19 +79,23 @@
 
                 <!-- Reliability -->
                 <div class="card reliability-card">
-                    <h3>AI Reliability</h3>
-                    <div class="reliability-summary" id="reliabilitySummary">
-                        <strong id="reliabilityScore">- / 100</strong>
-                        <span id="reliabilityLevel" class="reliability-level">Not available</span>
+                    <div class="reliability-heading">
+                        <div>
+                            <h3>AI Reliability</h3>
+                            <p>Technical assessment of prediction reliability.</p>
+                        </div>
+                        <span class="technical-chip">Not cancer probability</span>
                     </div>
-                    <p class="reliability-note">Technical reliability assessment, not cancer probability.</p>
+                    <div class="reliability-score-panel">
+                        <strong id="reliabilityScore">-</strong><span>/ 100</span>
+                        <b id="reliabilityLevel" class="reliability-level">Not available</b>
+                    </div>
+                    <div class="reliability-section-label">Reliability factors</div>
                     <div class="reliability-factors">
-                        <div class="factor-row"><span>Model Certainty</span><strong id="certaintyValue">Not evaluated</strong></div>
-                        <div class="factor-bar"><span id="certaintyBar"></span></div>
-                        <div class="factor-row"><span>Image Quality</span><strong id="qualityValue">Not evaluated</strong></div>
-                        <div class="factor-bar"><span id="qualityBar"></span></div>
-                        <div class="factor-row"><span>Input Similarity</span><strong>Not evaluated</strong></div>
-                        <div class="factor-row"><span>Calibration</span><strong>Not evaluated</strong></div>
+                        <div class="factor-block"><div class="factor-row"><span>Model Certainty</span><strong id="certaintyValue">Not evaluated</strong></div><div class="factor-bar"><span id="certaintyBar"></span></div><small>Engineering certainty</small></div>
+                        <div class="factor-block"><div class="factor-row"><span>Image Quality</span><strong id="qualityValue">Not evaluated</strong></div><div class="factor-bar"><span id="qualityBar"></span></div><small id="qualityDetail">Original-image assessment</small></div>
+                        <div class="factor-block"><div class="factor-row"><span>Input Similarity</span><strong id="inputSimilarityValue">Not available</strong></div><div class="factor-bar"><span id="similarityBar"></span></div><small id="similarityDetail">Feature-space comparison</small></div>
+                        <div class="calibration-block"><div class="factor-row"><span>Calibration</span><strong id="calibrationValue">Not available</strong></div><div class="calibration-metrics"><span>ECE <b id="eceValue">-</b></span><span>Brier <b id="brierValue">-</b></span></div></div>
                     </div>
                     <div class="recommendation-box">
                         <p class="metric-label">AI Decision Support</p>
@@ -121,7 +125,7 @@
 
     <div class="alert" id="customAlert"></div>
 
-    <script src="/static/app.js"></script>
+    <script src="/static/app.js?v=reliability-20260909"></script>
 </body>
 
 </html>

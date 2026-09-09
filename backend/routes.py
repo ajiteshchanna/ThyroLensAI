@@ -17,7 +17,7 @@ from utils.processing import preprocess_image
 from utils.gradcam import make_gradcam_heatmap, save_and_display_gradcam
 from utils.report_generator import generate_docx_report
 from utils.image_quality import assess_image_quality
-from utils.reliability import calculate_reliability
+from utils.reliability import calculate_reliability_with_embedding, extract_feature_embedding
 
 # Create Router
 router = APIRouter()
@@ -49,7 +49,7 @@ def get_image_base64(image):
     return base64.b64encode(buffered.getvalue()).decode("utf-8")
 
 
-def _calculate_reliability(image, score):
+def _calculate_reliability(image, score, processed_image, model):
     """Keep reliability failures isolated from prediction and Grad-CAM."""
     try:
         image_quality = assess_image_quality(image)
@@ -58,7 +58,8 @@ def _calculate_reliability(image, score):
             image_quality["quality_level"],
             image_quality["quality_score"],
         )
-        reliability = calculate_reliability(score, image_quality)
+        embedding = extract_feature_embedding(model, processed_image)
+        reliability = calculate_reliability_with_embedding(score, image_quality, embedding)
         logger.info(
             "Model certainty: %s (%.2f)",
             reliability["model_certainty"]["level"],
@@ -71,10 +72,12 @@ def _calculate_reliability(image, score):
         return {
             "score": None,
             "level": "NOT_AVAILABLE",
-            "model_certainty": {"score": None, "level": "NOT_AVAILABLE"},
-            "image_quality": {"score": None, "level": "NOT_AVAILABLE", "warnings": []},
-            "ood": {"status": "NOT_EVALUATED"},
-            "calibration": {"status": "NOT_EVALUATED"},
+            "model_certainty": {"score": None, "percent": None, "level": "NOT_AVAILABLE"},
+            "image_quality": {"score": None, "percent": None, "level": "NOT_AVAILABLE", "warnings": []},
+            "input_similarity": {"status": "NOT_AVAILABLE"},
+            "ood": {"status": "NOT_AVAILABLE"},
+            "calibration": {"status": "NOT_AVAILABLE"},
+            "components_used": [],
             "recommendation": "Reliability assessment unavailable. Clinical review is required.",
         }
 
@@ -135,7 +138,7 @@ async def analyze(file: UploadFile = File(...)):
     except Exception as e:
         logger.error(f"Grad-CAM generation failed: {e}\n{traceback.format_exc()}")
 
-    reliability = _calculate_reliability(image, score)
+    reliability = _calculate_reliability(image, score, processed_img, MODEL)
     return {
         "label": "Malignant" if is_malignant else "Benign",
         "score": score,
@@ -169,7 +172,7 @@ async def get_report(file: UploadFile = File(...)):
         is_malignant = score > 0.5
         label = "Malignant" if is_malignant else "Benign"
         conf_percent = score * 100 if is_malignant else (1 - score) * 100
-        reliability = _calculate_reliability(image, score)
+        reliability = _calculate_reliability(image, score, processed_img, MODEL)
         
         # Re-Run Grad-CAM for report
         gradcam_bytes = None

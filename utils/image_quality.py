@@ -41,8 +41,8 @@ def assess_image_quality(image):
         (1.0 - IMAGE_QUALITY_CONFIG["brightness_high"]),
         0.0,
     ))
-    contrast_score = _clamp(contrast / 0.25)
-    sharpness_score = _clamp(sharpness / (IMAGE_QUALITY_CONFIG["sharpness_low"] * 5.0))
+    contrast_score = _clamp(contrast / IMAGE_QUALITY_CONFIG["contrast_reference"])
+    sharpness_score = _clamp(sharpness / IMAGE_QUALITY_CONFIG["sharpness_reference"])
 
     warnings = []
     if width < IMAGE_QUALITY_CONFIG["minimum_width"] or height < IMAGE_QUALITY_CONFIG["minimum_height"]:

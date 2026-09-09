@@ -82,16 +82,28 @@ async function handleFiles(files) {
         const reliability = result.reliability || {};
         const level = reliability.level || 'NOT_AVAILABLE';
         const score = reliability.score;
-        document.getElementById('reliabilityScore').textContent = score == null ? 'Not available' : `${score} / 100`;
+        document.getElementById('reliabilityScore').textContent = score == null ? 'Not available' : score;
         const levelElement = document.getElementById('reliabilityLevel');
         levelElement.textContent = level;
         levelElement.className = `reliability-level ${level.toLowerCase()}`;
         const certainty = reliability.model_certainty?.score;
         const quality = reliability.image_quality?.score;
-        document.getElementById('certaintyValue').textContent = certainty == null ? 'Not evaluated' : `${Math.round(certainty * 100)}%`;
-        document.getElementById('qualityValue').textContent = quality == null ? 'Not evaluated' : `${Math.round(quality * 100)}% (${reliability.image_quality.level})`;
+        const certaintyPercent = reliability.model_certainty?.percent;
+        const qualityPercent = reliability.image_quality?.percent;
+        document.getElementById('certaintyValue').textContent = certaintyPercent == null ? 'Not evaluated' : `${certaintyPercent}%`;
+        document.getElementById('qualityValue').textContent = qualityPercent == null ? 'Not evaluated' : `${qualityPercent}% (${reliability.image_quality.level})`;
         document.getElementById('certaintyBar').style.width = certainty == null ? '0%' : `${certainty * 100}%`;
         document.getElementById('qualityBar').style.width = quality == null ? '0%' : `${quality * 100}%`;
+        const similarity = reliability.input_similarity || {};
+        const similarityPercent = similarity.percent;
+        const similarityStatus = similarity.status || 'NOT_AVAILABLE';
+        document.getElementById('inputSimilarityValue').textContent = similarityPercent == null ? similarityStatus : `${similarityPercent}% - ${similarityStatus}`;
+        document.getElementById('similarityBar').style.width = similarityPercent == null ? '0%' : `${similarityPercent}%`;
+        document.getElementById('similarityDetail').textContent = similarity.distance == null ? 'Feature-space comparison' : `Distance ${similarity.distance.toFixed(2)} / threshold ${similarity.threshold.toFixed(2)}`;
+        const calibration = reliability.calibration || {};
+        document.getElementById('calibrationValue').textContent = calibration.status || 'NOT_AVAILABLE';
+        document.getElementById('eceValue').textContent = calibration.ece == null ? '-' : `${(calibration.ece * 100).toFixed(2)}%`;
+        document.getElementById('brierValue').textContent = calibration.brier_score == null ? '-' : calibration.brier_score.toFixed(3);
         document.getElementById('recommendation').textContent = reliability.recommendation || 'Clinical review is required.';
 
         // Show Results with Animation

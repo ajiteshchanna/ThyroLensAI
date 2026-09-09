@@ -119,16 +119,23 @@ probability, patient risk score, diagnostic risk, or clinically validated measur
 The current score combines:
 
 ```
-reliability = 0.60 * model certainty + 0.40 * image quality
+reliability = 0.30 * model certainty + 0.20 * image quality +
+               0.30 * input similarity + 0.20 * calibration quality
 ```
 
 Model certainty is `abs(model_score - 0.5) * 2`. Image quality combines resolution,
 brightness, contrast, and sharpness checks. Reliability thresholds are `HIGH >= 80`,
 `MODERATE >= 60`, and `LOW < 60`; these are engineering heuristics, not clinical thresholds.
 
-Input similarity/OOD detection and probability calibration currently return `NOT_EVALUATED`.
-No values are fabricated for those signals. The system is decision support and requires human
-clinical review; it must not be used as a standalone diagnosis.
+Input similarity uses a global-average-pooled FibonacciNet feature vector and a regularized
+Mahalanobis distance against 2,492 deduplicated reference images. The threshold is the 99th
+percentile reference distance (`25.8113`). Similarity is `exp(-distance / threshold)`.
+
+Calibration uses Platt scaling fitted on 623 held-out images from the deduplicated original
+dataset. The persisted calibration artifact reports Brier score `0.0762` and ECE `0.0364`.
+The historical notebook did not persist its original split and performed upsampling before
+splitting, so independence from historical model training cannot be verified. These are
+engineering-level Trustworthy AI signals, not clinically validated measures.
 
 ## 📊 API Endpoints
 
@@ -151,10 +158,10 @@ Analyzes uploaded image and returns prediction with Grad-CAM.
    "reliability": {
       "score": 86,
       "level": "HIGH",
-      "model_certainty": {"score": 0.98, "level": "HIGH"},
-      "image_quality": {"score": 0.91, "level": "GOOD", "warnings": []},
-      "ood": {"status": "NOT_EVALUATED"},
-      "calibration": {"status": "NOT_EVALUATED"}
+      "model_certainty": {"score": 0.98, "percent": 98, "level": "HIGH"},
+      "image_quality": {"score": 0.91, "percent": 91, "level": "GOOD", "warnings": []},
+      "input_similarity": {"score": 0.89, "percent": 89, "status": "NORMAL", "ood": false},
+      "calibration": {"status": "CALIBRATED", "method": "Platt scaling", "calibrated_probability": 0.98, "ece": 0.0364, "brier_score": 0.0762}
    }
 }
 ```

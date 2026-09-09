@@ -421,3 +421,20 @@ nav a:hover {
 .safety-notice {
     margin-top: 1rem;
 }
+
+/* Structured reliability card */
+.reliability-card { min-height: 0; }
+.reliability-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+.reliability-heading h3 { margin-bottom: 0.35rem; }
+.reliability-heading p { color: var(--text-secondary); font-size: 0.8rem; line-height: 1.4; }
+.technical-chip { border: 1px solid var(--border); border-radius: 999px; color: var(--text-secondary); font-size: 0.65rem; padding: 0.35rem 0.55rem; white-space: nowrap; }
+.reliability-score-panel { align-items: baseline; border-bottom: 1px solid var(--border); display: flex; gap: 0.35rem; padding: 0.7rem 0 1rem; }
+.reliability-score-panel strong { font: 800 2.5rem 'Outfit', sans-serif; }
+.reliability-score-panel span { color: var(--text-secondary); }
+.reliability-score-panel b { margin-left: auto; }
+.reliability-section-label { color: var(--text-secondary); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em; margin-top: 1rem; text-transform: uppercase; }
+.factor-block { margin-top: 0.75rem; }
+.factor-block small { color: var(--text-secondary); display: block; font-size: 0.72rem; margin-top: 0.35rem; }
+.calibration-block { margin-top: 0.75rem; }
+.calibration-metrics { color: var(--text-secondary); display: flex; font-size: 0.75rem; gap: 1rem; margin-top: 0.5rem; }
+.calibration-metrics b { color: var(--text-primary); margin-left: 0.25rem; }

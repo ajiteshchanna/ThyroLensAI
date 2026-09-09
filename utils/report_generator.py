@@ -56,7 +56,7 @@ def generate_docx_report(image_buffer, prediction_label, confidence_score, confi
     doc.add_heading('1. Analysis Executive Summary', level=1)
     
     # Summary Table
-    table = doc.add_table(rows=8, cols=2)
+    table = doc.add_table(rows=10, cols=2)
     table.style = 'Table Grid'
     
     def fill_row(row_idx, label, value, is_bold_val=False):
@@ -77,8 +77,12 @@ def generate_docx_report(image_buffer, prediction_label, confidence_score, confi
     fill_row(3, "AI Reliability Score", f"{reliability.get('score', 'Not available')} / 100")
     fill_row(4, "Reliability Level", reliability.get("level", "Not available"))
     fill_row(5, "Image Quality", image_quality.get("level", "Not available"))
-    fill_row(6, "Input Similarity", reliability.get("ood", {}).get("status", "NOT_EVALUATED"))
-    fill_row(7, "Calibration", reliability.get("calibration", {}).get("status", "NOT_EVALUATED"))
+    similarity = reliability.get("input_similarity", reliability.get("ood", {}))
+    calibration = reliability.get("calibration", {})
+    fill_row(6, "Model Certainty", f"{reliability.get('model_certainty', {}).get('percent', 'Not available')}%")
+    fill_row(7, "Input Similarity", f"{similarity.get('percent', 'Not available')}% ({similarity.get('status', 'NOT_AVAILABLE')})")
+    fill_row(8, "Calibration", calibration.get("status", "NOT_AVAILABLE"))
+    fill_row(9, "Calibrated Probability", f"{calibration.get('calibrated_probability', 'Not available')}")
 
     # Color the determination cell
     if "Malignant" in prediction_label:
@@ -129,7 +133,9 @@ def generate_docx_report(image_buffer, prediction_label, confidence_score, confi
         "The model utilizes Fibonacci-scaled filter counts (21, 34, 55, 89, 144, 233, 377) and Partial Connection "
         "Blocks (PCB) for optimal feature extraction from medical ultrasound signals. Interpretability is "
         "provided via Gradient-weighted Class Activation Mapping (Grad-CAM). Image quality uses resolution, "
-        "brightness, contrast, and sharpness checks. Calibration and input similarity were not evaluated."
+        "brightness, contrast, and sharpness checks. Input similarity uses feature-space Mahalanobis distance "
+        "and calibration uses fitted Platt scaling on persisted engineering artifacts. The historical training "
+        "split was not persisted, so independence from that fit cannot be verified."
     )
     
     # 6. Disclaimer Header

@@ -31,7 +31,7 @@
                 <div class="drop-zone" id="dropZone">
                     <i class="fas fa-cloud-upload-alt dz-icon"></i>
                     <p class="dz-text">Drag & Drop medical image</p>
-                    <p class="dz-subtext">Supports DICOM, JPEG, PNG (Max 10MB)</p>
+                    <p class="dz-subtext">Supports JPEG and PNG (Max 10MB)</p>
                     <input type="file" id="fileInput" accept="image/*">
                 </div>
                 <div class="medical-loader" id="loader"></div>
@@ -66,13 +66,12 @@
                         </div>
 
                         <div class="metric-box">
-                            <p class="metric-label">Class-relative Score</p>
-                            <p class="metric-value" id="confPercent">0.00%</p>
-                        </div>
-
-                        <div class="metric-box">
                             <p class="metric-label">Network Class ID</p>
                             <p class="metric-value" id="classId">-</p>
+                        </div>
+                        <div class="metric-box">
+                            <p class="metric-label">Calibrated Probability</p>
+                            <p class="metric-value" id="calibratedProbability">Not available</p>
                         </div>
                     </div>
                 </div>

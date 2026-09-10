@@ -35,12 +35,12 @@ def generate_docx_report(image_buffer, prediction_label, confidence_score, confi
     header = section.header
     header_para = header.paragraphs[0]
     header_para.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-    run = header_para.add_run("THYROCHECK AI | CLINICAL DIAGNOSTICS")
+    run = header_para.add_run("THYROCHECK AI | AI DECISION SUPPORT")
     run.font.size = Pt(9)
     run.font.color.rgb = RGBColor(0, 192, 163) # Emerald
     
     # 2. Title & Date
-    title = doc.add_heading('Diagnostic Analysis Report', 0)
+    title = doc.add_heading('AI Decision Support Report', 0)
     title.alignment = WD_ALIGN_PARAGRAPH.CENTER
     
     meta_para = doc.add_paragraph()
@@ -56,7 +56,7 @@ def generate_docx_report(image_buffer, prediction_label, confidence_score, confi
     doc.add_heading('1. Analysis Executive Summary', level=1)
     
     # Summary Table
-    table = doc.add_table(rows=10, cols=2)
+    table = doc.add_table(rows=9, cols=2)
     table.style = 'Table Grid'
     
     def fill_row(row_idx, label, value, is_bold_val=False):
@@ -73,16 +73,15 @@ def generate_docx_report(image_buffer, prediction_label, confidence_score, confi
     image_quality = reliability.get("image_quality", {})
     fill_row(0, "AI Classification", prediction_label.upper(), True)
     fill_row(1, "Model Score", f"{confidence_score:.4f}")
-    fill_row(2, "Class-relative Score", f"{confidence_percent:.2f}%")
-    fill_row(3, "AI Reliability Score", f"{reliability.get('score', 'Not available')} / 100")
-    fill_row(4, "Reliability Level", reliability.get("level", "Not available"))
-    fill_row(5, "Image Quality", image_quality.get("level", "Not available"))
+    fill_row(2, "AI Reliability Score", f"{reliability.get('score', 'Not available')} / 100")
+    fill_row(3, "Reliability Level", reliability.get("level", "Not available"))
+    fill_row(4, "Image Quality", image_quality.get("level", "Not available"))
     similarity = reliability.get("input_similarity", reliability.get("ood", {}))
     calibration = reliability.get("calibration", {})
-    fill_row(6, "Model Certainty", f"{reliability.get('model_certainty', {}).get('percent', 'Not available')}%")
-    fill_row(7, "Input Similarity", f"{similarity.get('percent', 'Not available')}% ({similarity.get('status', 'NOT_AVAILABLE')})")
-    fill_row(8, "Calibration", calibration.get("status", "NOT_AVAILABLE"))
-    fill_row(9, "Calibrated Probability", f"{calibration.get('calibrated_probability', 'Not available')}")
+    fill_row(5, "Model Certainty", f"{reliability.get('model_certainty', {}).get('percent', 'Not available')}%")
+    fill_row(6, "Input Similarity", f"{similarity.get('percent', 'Not available')}% ({similarity.get('status', 'NOT_AVAILABLE')})")
+    fill_row(7, "Calibration", calibration.get("status", "NOT_AVAILABLE"))
+    fill_row(8, "Calibrated Probability", f"{calibration.get('calibrated_probability', 'Not available')}")
 
     # Color the determination cell
     if "Malignant" in prediction_label:
@@ -102,7 +101,7 @@ def generate_docx_report(image_buffer, prediction_label, confidence_score, confi
     )
 
     # 4. Medical Imaging Section
-    doc.add_heading('3. Diagnostic Imaging & Interpretability', level=1)
+    doc.add_heading('3. Imaging & Interpretability', level=1)
     
     # Create side-by-side or stacked layout
     # Since side-by-side can be tricky in docx without complex tables, we'll do structured stacking

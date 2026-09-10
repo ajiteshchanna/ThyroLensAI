@@ -104,17 +104,32 @@ def calculate_reliability(model_score, image_quality):
 
 def calculate_reliability_with_embedding(model_score, image_quality, embedding):
     certainty = prediction_certainty(model_score)
-    artifacts = _load_artifacts()
     factors = {
         "model_certainty": certainty["score"],
         "image_quality": float(image_quality["quality_score"]),
     }
     input_similarity = {"status": "NOT_AVAILABLE"}
     calibration = {"status": "NOT_AVAILABLE"}
-    if artifacts is not None and embedding is not None:
+    try:
+        artifacts = _load_artifacts()
+        if artifacts is None:
+            raise FileNotFoundError("Reliability artifacts are unavailable")
+        if embedding is None:
+            raise ValueError("Model embedding is unavailable")
         input_similarity = _input_similarity(embedding, artifacts)
+    except Exception as exc:
+        input_similarity = {"status": "NOT_AVAILABLE", "error": str(exc)}
+    try:
+        artifacts = _ARTIFACTS or _load_artifacts()
+        if artifacts is None:
+            raise FileNotFoundError("Calibration artifact is unavailable")
         calibration = _calibration(model_score, artifacts)
+    except Exception as exc:
+        calibration = {"status": "NOT_AVAILABLE", "error": str(exc)}
+
+    if input_similarity.get("score") is not None:
         factors["input_similarity"] = input_similarity["score"]
+    if calibration.get("ece") is not None:
         factors["calibration"] = max(0.0, 1.0 - float(calibration["ece"]))
 
     weights = RELIABILITY_CONFIG["weights"]
@@ -133,7 +148,7 @@ def calculate_reliability_with_embedding(model_score, image_quality, embedding):
         recommendation = "Input is outside the model's expected data distribution. Clinical review is required."
     else:
         recommendation = recommendations[level]
-    return {
+    result = {
         "score": max(0, min(100, score)),
         "level": level,
         "model_certainty": certainty,
@@ -149,3 +164,6 @@ def calculate_reliability_with_embedding(model_score, image_quality, embedding):
         "components_used": list(factors),
         "recommendation": recommendation,
     }
+    if calibration.get("calibrated_probability") is not None:
+        result["calibrated_probability"] = calibration["calibrated_probability"]
+    return result

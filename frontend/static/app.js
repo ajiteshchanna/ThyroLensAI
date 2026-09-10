@@ -76,8 +76,10 @@ async function handleFiles(files) {
         predBadge.className = `prediction-badge ${result.is_malignant ? 'malignant' : 'benign'}`;
 
         document.getElementById('modelScore').textContent = (result.model_score_percent ?? result.score * 100).toFixed(2) + "%";
-        document.getElementById('confPercent').textContent = result.percent.toFixed(2) + "%";
         document.getElementById('classId').textContent = result.class_id;
+        document.getElementById('calibratedProbability').textContent = result.calibrated_probability == null
+            ? 'Not available'
+            : `${(result.calibrated_probability * 100).toFixed(2)}%`;
 
         const reliability = result.reliability || {};
         const level = reliability.level || 'NOT_AVAILABLE';

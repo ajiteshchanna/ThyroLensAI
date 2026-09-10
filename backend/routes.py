@@ -11,6 +11,7 @@ from huggingface_hub import hf_hub_download
 
 # Import shared utils
 from utils.config import REPO_ID, MODEL_FILENAME
+from utils.config import UPLOAD_CONFIG
 from utils.logger import logger
 from utils.model_architecture import Avg2MaxPooling, DepthwiseSeparableConv
 from utils.processing import preprocess_image
@@ -49,8 +50,27 @@ def get_image_base64(image):
     return base64.b64encode(buffered.getvalue()).decode("utf-8")
 
 
+async def _read_uploaded_image(file):
+    suffix = (file.filename or "").lower().rsplit(".", 1)
+    extension = f".{suffix[-1]}" if len(suffix) == 2 else ""
+    if extension not in UPLOAD_CONFIG["allowed_extensions"]:
+        raise ValueError("Unsupported image type. Upload a JPEG or PNG image.")
+    contents = await file.read()
+    if len(contents) > UPLOAD_CONFIG["max_bytes"]:
+        raise ValueError("Image exceeds the 10 MB upload limit.")
+    try:
+        image = Image.open(io.BytesIO(contents))
+        image.load()
+        image.verify()
+        image = Image.open(io.BytesIO(contents)).convert("RGB")
+    except Exception as exc:
+        raise ValueError("Uploaded file is not a readable image.") from exc
+    return image
+
+
 def _calculate_reliability(image, score, processed_image, model):
     """Keep reliability failures isolated from prediction and Grad-CAM."""
+    image_quality = None
     try:
         image_quality = assess_image_quality(image)
         logger.info(
@@ -58,7 +78,21 @@ def _calculate_reliability(image, score, processed_image, model):
             image_quality["quality_level"],
             image_quality["quality_score"],
         )
+    except Exception as exc:
+        logger.error("Image quality assessment failed: %s\n%s", exc, traceback.format_exc())
+        image_quality = {
+            "quality_score": 0.0,
+            "quality_level": "NOT_AVAILABLE",
+            "warnings": ["Image quality assessment unavailable"],
+        }
+
+    embedding = None
+    try:
         embedding = extract_feature_embedding(model, processed_image)
+    except Exception as exc:
+        logger.error("Input similarity embedding failed: %s\n%s", exc, traceback.format_exc())
+
+    try:
         reliability = calculate_reliability_with_embedding(score, image_quality, embedding)
         logger.info(
             "Model certainty: %s (%.2f)",
@@ -68,7 +102,7 @@ def _calculate_reliability(image, score, processed_image, model):
         logger.info("AI reliability: %d/100 (%s)", reliability["score"], reliability["level"])
         return reliability
     except Exception as exc:
-        logger.error("Reliability assessment failed: %s\n%s", exc, traceback.format_exc())
+        logger.error("Reliability aggregation failed: %s\n%s", exc, traceback.format_exc())
         return {
             "score": None,
             "level": "NOT_AVAILABLE",
@@ -104,9 +138,10 @@ async def analyze(file: UploadFile = File(...)):
         if MODEL is None:
             return JSONResponse(status_code=503, content={"error": "Model not loaded"})
     
-    # Read Image
-    contents = await file.read()
-    image = Image.open(io.BytesIO(contents))
+    try:
+        image = await _read_uploaded_image(file)
+    except ValueError as exc:
+        return JSONResponse(status_code=400, content={"error": str(exc)})
     
     # Process
     processed_img = preprocess_image(image)
@@ -139,6 +174,7 @@ async def analyze(file: UploadFile = File(...)):
         logger.error(f"Grad-CAM generation failed: {e}\n{traceback.format_exc()}")
 
     reliability = _calculate_reliability(image, score, processed_img, MODEL)
+    calibration = reliability.get("calibration", {})
     return {
         "label": "Malignant" if is_malignant else "Benign",
         "score": score,
@@ -149,6 +185,7 @@ async def analyze(file: UploadFile = File(...)):
         "is_malignant": is_malignant,
         "original_image": get_image_base64(image),
         "gradcam_image": gradcam_b64,
+        "calibrated_probability": calibration.get("calibrated_probability"),
         "reliability": reliability,
     }
 
@@ -161,9 +198,7 @@ async def get_report(file: UploadFile = File(...)):
             if MODEL is None:
                 return JSONResponse(status_code=503, content={"error": "Model not loaded"})
 
-        # Read Image (again)
-        contents = await file.read()
-        image = Image.open(io.BytesIO(contents))
+        image = await _read_uploaded_image(file)
         
         # Re-Run Prediction
         processed_img = preprocess_image(image)

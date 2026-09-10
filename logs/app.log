@@ -9540,3 +9540,26 @@ TypeError: list indices must be integers or slices, not tuple
 02:06:43 - INFO - routes - Image quality: GOOD (0.93)
 02:06:43 - INFO - routes - Model certainty: MODERATE (0.55)
 02:06:43 - INFO - routes - AI reliability: 66/100 (MODERATE)
+13:52:59 - INFO - processing - Preprocessing image of size: (480, 352) and mode: L
+16:57:03 - INFO - app - Starting Thyroid Cancer Detection API...
+16:57:08 - INFO - routes - Loading model from Hugging Face...
+16:57:10 - INFO - routes - Model loaded successfully
+13:54:50 - INFO - routes - Report request received for file: 1 cancer.jpg
+13:54:50 - INFO - processing - Preprocessing image of size: (480, 352) and mode: RGB
+13:54:50 - INFO - routes - Image quality: GOOD (0.93)
+13:54:50 - INFO - routes - Model certainty: MODERATE (0.52)
+13:54:50 - INFO - routes - AI reliability: 65/100 (MODERATE)
+13:54:51 - INFO - routes - Grad-CAM for report generated using layer: depthwise_separable_conv_1
+13:54:51 - INFO - report_generator - Generating enhanced medical report for: Malignant
+17:01:50 - INFO - streamlit_app - Image uploaded in Streamlit: 571906608_18405720310186194_3563563807102114206_n.jpg (1080×1080) - Google Chrome 11_23_2025 3_03_54 PM.png
+17:01:52 - INFO - report_generator - Generating DOCX report for label: Benign (Non-Cancerous)
+17:03:33 - INFO - streamlit_app - Loading model for Streamlit...
+13:55:19 - INFO - routes - Image quality: GOOD (0.92)
+13:55:20 - INFO - routes - Model certainty: HIGH (0.99)
+13:55:20 - INFO - routes - AI reliability: 83/100 (HIGH)
+18:02:11 - INFO - app - Starting Thyroid Cancer Detection API...
+18:02:17 - INFO - routes - Loading model from Hugging Face...
+18:02:19 - INFO - routes - Model loaded successfully
+18:03:13 - INFO - routes - Analyze request received for file: 1 cancer.jpg
+18:03:13 - INFO - processing - Preprocessing image of size: (480, 352) and mode: L
+18:03:39 - INFO - routes - Report request received for file: 1 cancer.jpg

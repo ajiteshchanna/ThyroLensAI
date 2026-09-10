@@ -1,221 +1,155 @@
-# Thyroid Cancer Detection System
+# ThyroCheck AI
 
-An AI-powered web application for detecting thyroid cancer from medical images using deep learning and Grad-CAM interpretability.
+ThyroCheck AI is a research and educational AI decision-support prototype for binary thyroid image classification. It combines a custom FibonacciNet model with Grad-CAM, deterministic image-quality checks, feature-space input similarity, probability calibration, and an engineering-level AI technical reliability score.
 
-## 🌟 Features
+## Overview
 
-- **AI-Powered Analysis**: Uses a custom FibonacciNet deep learning model for accurate thyroid cancer detection
-- **Grad-CAM Visualization**: Provides interpretable heatmaps showing which regions the AI focused on
-- **Dual Interface**: 
-  - Modern web app (FastAPI + HTML/CSS)
-  - Streamlit dashboard
-- **Report Generation**: Download detailed DOCX reports with analysis results
-- **Professional UI**: Clean, medical-themed interface with teal/white color scheme
+The system accepts readable JPEG and PNG images, preprocesses them to 224x224 RGB, and returns a benign/malignant classification. The result distinguishes three quantities:
 
-## 🏗️ Project Structure
+- **Raw model score:** the sigmoid output produced by FibonacciNet.
+- **Calibrated probability:** a Platt-scaled version of the raw score when the persisted calibration artifact is available.
+- **AI technical reliability:** an engineering assessment of whether the available technical signals support cautious use of the result. It is not cancer probability, patient risk, diagnostic probability, or probability of correctness.
 
-```
-Thyroid new/
-├── app.py                      # FastAPI entry point
-├── streamlit_app.py            # Streamlit application
-├── model_architecture.py       # Custom neural network layers
-├── requirements.txt            # Python dependencies
-├── backend/
-│   └── routes.py              # API endpoints
-├── frontend/
-│   ├── static/
-│   │   ├── style.css          # Styling
-│   │   └── app.js             # Frontend logic
-│   └── templates/
-│       └── index.html         # Main page
-├── utils/
-│   ├── config.py              # Configuration
-│   ├── processing.py          # Image preprocessing
-│   ├── gradcam.py             # Grad-CAM implementation
-│   ├── report_generator.py   # DOCX report generation
-│   ├── image_quality.py      # Deterministic input quality checks
-│   ├── reliability.py        # AI reliability assessment
-│   └── logger.py              # Logging configuration
-└── logs/
-    └── app.log                # Application logs
-```
+This is not a clinically validated diagnostic system.
 
-## 🚀 Installation
+## Key Features
 
-### Prerequisites
-- Python 3.8+
-- pip
+- FastAPI web application and optional Streamlit interface.
+- FibonacciNet binary classification without architecture changes or retraining.
+- Grad-CAM visualization using the final depthwise-separable convolution layer.
+- Deterministic resolution, brightness, contrast, and sharpness checks.
+- Mahalanobis-distance input similarity/OOD screening.
+- Persisted Platt calibration with Brier score and ECE metadata.
+- Configurable technical reliability score and human-in-the-loop recommendation.
+- DOCX decision-support report generation.
+- Reusable evaluation module for actual held-out predictions.
 
-### Setup
-
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd "Thyroid new"
-   ```
-
-2. **Create virtual environment**
-   ```bash
-   python -m venv venv
-   venv\Scripts\activate  # Windows
-   # source venv/bin/activate  # Linux/Mac
-   ```
-
-3. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Configure Hugging Face** (if model is private)
-   ```bash
-   huggingface-cli login
-   ```
-
-## 💻 Usage
-
-### Option 1: Web Application (FastAPI)
-
-1. **Start the server**
-   ```bash
-   python app.py
-   ```
-
-2. **Open browser**
-   Navigate to: `http://localhost:8000`
-
-3. **Upload & Analyze**
-   - Click "Upload Image"
-   - Select a thyroid ultrasound/pathology image
-   - View AI analysis and Grad-CAM heatmap
-   - Download DOCX report
-
-### Option 2: Streamlit Dashboard
-
-1. **Run Streamlit**
-   ```bash
-   streamlit run streamlit_app.py
-   ```
-
-2. **Access dashboard**
-   Opens automatically in browser (usually `http://localhost:8501`)
-
-## 🧠 Model Architecture
-
-**FibonacciNet** - Custom CNN with:
-- SE (Squeeze-and-Excitation) blocks
-- Depthwise separable convolutions
-- Avg2Max pooling layers
-- Progressive channel expansion following Fibonacci sequence
-
-**Input**: 224x224 RGB images  
-**Output**: Binary classification (Benign/Malignant)
-
-## Trustworthy AI Reliability Assessment
-
-The **AI Reliability Score** is a technical, engineering-level assessment of how much reliance
-should be placed on the current model output given the available signals. It is **not** a cancer
-probability, patient risk score, diagnostic risk, or clinically validated measure.
-
-The current score combines:
+## Architecture
 
 ```
-reliability = 0.30 * model certainty + 0.20 * image quality +
-               0.30 * input similarity + 0.20 * calibration quality
+Upload (JPEG/PNG)
+  -> validation and RGB preprocessing
+  -> FibonacciNet prediction
+  -> calibration and feature-space similarity
+  -> image quality and technical reliability
+  -> Grad-CAM visualization
+  -> web response or DOCX report
 ```
 
-Model certainty is `abs(model_score - 0.5) * 2`. Image quality combines resolution,
-brightness, contrast, and sharpness checks. Reliability thresholds are `HIGH >= 80`,
-`MODERATE >= 60`, and `LOW < 60`; these are engineering heuristics, not clinical thresholds.
+## Model
 
-Input similarity uses a global-average-pooled FibonacciNet feature vector and a regularized
-Mahalanobis distance against 2,492 deduplicated reference images. The threshold is the 99th
-percentile reference distance (`25.8113`). Similarity is `exp(-distance / threshold)`.
+FibonacciNet uses channel widths 21, 34, 55, 89, 144, 233, and 377. The implementation contains BatchNorm, ReLU, PCB auxiliary paths, Avg2MaxPooling, depthwise-separable convolutions, global average pooling, and a sigmoid binary classifier. It does **not** contain squeeze-and-excitation blocks.
 
-Calibration uses Platt scaling fitted on 623 held-out images from the deduplicated original
-dataset. The persisted calibration artifact reports Brier score `0.0762` and ECE `0.0364`.
-The historical notebook did not persist its original split and performed upsampling before
-splitting, so independence from historical model training cannot be verified. These are
-engineering-level Trustworthy AI signals, not clinically validated measures.
+Input shape is `(224, 224, 3)` with pixels scaled to `[0, 1]`. Class ID `0` is benign and class ID `1` is malignant according to the existing model contract.
 
-## 📊 API Endpoints
+## Explainability
 
-### `POST /analyze`
-Analyzes uploaded image and returns prediction with Grad-CAM.
+Grad-CAM highlights spatial regions contributing to the model output. It is an approximate model-attention visualization, not a causal explanation and not evidence that a highlighted region is medically diagnostic.
 
-**Request**: Multipart form-data with image file
+## Trustworthy AI
 
-**Response**:
-```json
-{
-  "label": "Malignant (Cancerous)",
-  "score": 0.9876,
-   "percent": 98.76,
-   "model_score_percent": 98.76,
-  "class_id": 1,
-  "is_malignant": true,
-  "original_image": "base64...",
-   "gradcam_image": "base64...",
-   "reliability": {
-      "score": 86,
-      "level": "HIGH",
-      "model_certainty": {"score": 0.98, "percent": 98, "level": "HIGH"},
-      "image_quality": {"score": 0.91, "percent": 91, "level": "GOOD", "warnings": []},
-      "input_similarity": {"score": 0.89, "percent": 89, "status": "NORMAL", "ood": false},
-      "calibration": {"status": "CALIBRATED", "method": "Platt scaling", "calibrated_probability": 0.98, "ece": 0.0364, "brier_score": 0.0762}
-   }
-}
+### Image Quality
+
+Quality combines resolution, brightness, contrast, and Laplacian sharpness checks. Warnings such as excessive blur, low resolution, darkness, brightness, or low contrast lower the technical reliability signal. These checks are engineering heuristics and are not clinically validated.
+
+### Calibration
+
+The persisted artifact uses Platt scaling. It was fit on 623 samples from a deduplicated partition and records Brier score `0.0762` and ECE `0.0364` for that sample. The historical model split was not persisted, so independence from model training cannot be verified. A calibrated probability is not a clinically validated probability.
+
+### Input Similarity / OOD
+
+The application extracts the pre-classifier global-average-pooled embedding, computes a regularized Mahalanobis distance against a persisted reference distribution, compares the distance with the stored threshold, and maps it to `exp(-distance / threshold)`. An OOD result means the input differs from the reference feature distribution; it does not establish medical validity.
+
+### AI Reliability
+
+```
+reliability = 0.30 * model_certainty
+            + 0.20 * image_quality
+            + 0.30 * input_similarity
+            + 0.20 * calibration_quality
 ```
 
-### `POST /report`
-Generates and downloads DOCX report.
+Weights and thresholds are configurable in `utils/config.py`. Current engineering levels are HIGH >= 80, MODERATE >= 60, and LOW < 60. A strong classifier score cannot by itself produce high technical reliability; poor quality, poor calibration, or an OOD signal lowers the result.
 
-**Request**: Multipart form-data with image file
+## Evaluation
 
-**Response**: DOCX file download
+Use the evaluation module with an actual held-out CSV containing `label,score` columns:
 
-## 🛠️ Technologies
+```bash
+python -m evaluation.evaluate_model path\to\held_out_predictions.csv --output-dir results
+```
 
-- **Backend**: FastAPI, Python
-- **Frontend**: HTML5, CSS3, Vanilla JavaScript
-- **ML Framework**: TensorFlow/Keras
-- **Model Hosting**: Hugging Face Hub
-- **Visualization**: Grad-CAM, Matplotlib
-- **Reporting**: python-docx
-- **UI Framework**: Streamlit (alternative interface)
+The module calculates accuracy, precision, sensitivity/recall, specificity, F1, ROC-AUC, NPV, FPR, FNR, confusion matrix, Brier score, and ECE. It writes JSON and plot artifacts. No verified independent performance metrics are committed because the historical split manifest is unavailable.
 
-## 📝 Configuration
+## Historical Methodology and Limitations
 
-Edit `utils/config.py` to change:
-- Hugging Face repository ID
-- Model filename
-- Other settings
+The notebook downloads the Kaggle dataset, uses class folders `0` and `1`, resizes to 224x224 RGB, rescales pixels, upsamples the minority class with replacement, and then makes an 80/10/10 train/validation/test split. Upsampling before splitting creates a potential duplicate-leakage risk. The original split manifest and exact dataset version were not persisted. There is no external validation or clinical validation.
 
-## 🔍 Logging
+For future experiments, use: original data -> exact-byte and perceptual deduplication -> stratified split -> training-only balancing and augmentation.
 
-Logs are stored in `logs/app.log` and include:
-- Model loading events
-- Prediction requests
-- Errors and warnings
-- Grad-CAM generation status
+See [MODEL_CARD.md](MODEL_CARD.md) for the full model card.
 
-## 🤝 Contributing
+## Project Structure
 
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Open a Pull Request
+```
+app.py                         FastAPI entry point
+backend/routes.py              Upload, analysis, and report endpoints
+frontend/                      HTML, CSS, and browser JavaScript
+utils/                         Model, preprocessing, quality, reliability, and reports
+evaluation/                    Reusable metrics and plotting helpers
+experiments/                   Historical notebook
+model artifacts/               Model-adjacent OOD and calibration artifacts
+test_*.py                      Focused regression and live checks
+MODEL_CARD.md                 Model and safety documentation
+```
 
-## 📄 License
+## Installation
 
-[Add your license here]
+```bash
+python -m venv cenv
+cenv\Scripts\activate
+pip install -r requirements.txt
+```
 
-## 👥 Authors
+The model is downloaded from the configured Hugging Face repository on first use. Update `utils/config.py` only when intentionally changing model or artifact configuration.
 
-[Add author information]
+## Usage
 
-## 🙏 Acknowledgments
+Start FastAPI:
 
-- FibonacciNet architecture design
-- Grad-CAM implementation
-- Medical imaging community
+```bash
+python app.py
+```
+
+Open `http://localhost:8000`. Upload a JPEG or PNG image under 10 MB. The interface presents the raw scan, prediction, raw model score, calibrated probability when available, network class ID, technical reliability factors, recommendation, and Grad-CAM output.
+
+The optional Streamlit interface can be started with:
+
+```bash
+streamlit run streamlit_app.py
+```
+
+## API
+
+`POST /analyze` accepts multipart field `file` and returns `label`, `score`, `model_score_percent`, `calibrated_probability`, `class_id`, `is_malignant`, `original_image`, `gradcam_image`, and a structured `reliability` object. Component failures are reported as `NOT_AVAILABLE` while prediction remains available where possible.
+
+`POST /report` accepts the same upload and returns a DOCX AI decision-support report that distinguishes raw model score, calibrated probability, and AI technical reliability.
+
+## Screenshots
+
+No screenshots are committed yet. Suggested paths for future evidence are `docs/screenshots/upload.png`, `analysis.png`, `reliability.png`, `gradcam.png`, and `dashboard.png`. Do not add synthetic screenshots or fabricated evaluation charts.
+
+## Safety Notice
+
+This project is an AI decision-support prototype for research and education. It is not a standalone diagnosis, is not clinically validated, and must not replace qualified clinical review. Do not upload identifying patient information.
+
+## Future Work
+
+- Persist a versioned, deduplicated dataset manifest and independent test split.
+- Run external and prospective validation with appropriate governance.
+- Add a research dashboard only when real evaluation artifacts are available.
+- Evaluate calibration and OOD behavior across acquisition devices and sites.
+
+## Authors
+
+Add project authors and dataset attribution here.

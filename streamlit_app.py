@@ -19,7 +19,7 @@ from utils.report_generator import generate_docx_report
 from utils.model_architecture import Avg2MaxPooling, DepthwiseSeparableConv
 from utils.logger import logger
 from utils.image_quality import assess_image_quality
-from utils.reliability import calculate_reliability
+from utils.reliability import calculate_reliability_with_embedding, extract_feature_embedding
 
 # --- Page Config ---
 st.set_page_config(page_title="Thyroid Cancer Detection", page_icon="🧬", layout="centered")
@@ -71,7 +71,8 @@ def main():
             label = "Malignant (Cancerous)" if is_cancer else "Benign (Non-Cancerous)"
             conf_percent = score * 100 if is_cancer else (1 - score) * 100
             image_quality = assess_image_quality(image)
-            reliability = calculate_reliability(score, image_quality)
+            embedding = extract_feature_embedding(model, processed_img)
+            reliability = calculate_reliability_with_embedding(score, image_quality, embedding)
             
             # Display Results
             st.markdown("---")
@@ -86,7 +87,12 @@ def main():
             st.write(f"Reliability level: **{reliability['level']}**")
             st.write(f"Model certainty: {reliability['model_certainty']['score']:.0%}")
             st.write(f"Image quality: {image_quality['quality_level']} ({image_quality['quality_score']:.0%})")
-            st.caption("Calibration and input similarity: NOT_EVALUATED. This is technical decision support, not a standalone diagnosis.")
+            calibration = reliability["calibration"]
+            similarity = reliability["input_similarity"]
+            calibrated = calibration.get("calibrated_probability")
+            st.write(f"Calibrated probability: {calibrated:.2%}" if calibrated is not None else "Calibrated probability: Not available")
+            st.write(f"Input similarity: {similarity.get('percent', 'Not available')}% ({similarity.get('status', 'NOT_AVAILABLE')})")
+            st.caption("This is technical decision support, not a standalone diagnosis.")
             
             # 2. Grad-CAM
             st.markdown("---")

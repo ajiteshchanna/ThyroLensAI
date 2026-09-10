@@ -19,6 +19,11 @@ RELIABILITY_ARTIFACT_DIR = "model artifacts"
 OOD_REFERENCE_FILENAME = "ood_reference.npz"
 CALIBRATION_FILENAME = "calibration.json"
 
+UPLOAD_CONFIG = {
+	"max_bytes": 10 * 1024 * 1024,
+	"allowed_extensions": {".jpg", ".jpeg", ".png"},
+}
+
 IMAGE_QUALITY_CONFIG = {
 	"minimum_width": 224,
 	"minimum_height": 224,

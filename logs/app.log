@@ -9563,3 +9563,29 @@ TypeError: list indices must be integers or slices, not tuple
 18:03:13 - INFO - routes - Analyze request received for file: 1 cancer.jpg
 18:03:13 - INFO - processing - Preprocessing image of size: (480, 352) and mode: L
 18:03:39 - INFO - routes - Report request received for file: 1 cancer.jpg
+20:05:03 - INFO - app - Starting ThyroLens AI API...
+20:05:18 - INFO - routes - Loading model from Hugging Face...
+20:05:22 - INFO - routes - Model loaded successfully
+20:25:49 - INFO - routes - Loading model from Hugging Face...
+20:25:52 - INFO - routes - Model loaded successfully
+21:39:27 - INFO - app - Starting ThyroLens AI API...
+21:39:39 - INFO - routes - Loading model from Hugging Face...
+21:39:43 - INFO - routes - Model loaded successfully
+21:43:33 - INFO - app - Starting ThyroLens AI API...
+21:43:43 - INFO - routes - Loading model from Hugging Face...
+21:43:46 - INFO - routes - Model loaded successfully
+21:58:13 - INFO - routes - Analyze request received for file: 0 non cancer.jpg
+21:58:13 - INFO - processing - Preprocessing image of size: (279, 268) and mode: RGB
+21:58:15 - INFO - routes - Grad-CAM generated successfully using layer: depthwise_separable_conv_1
+21:58:15 - INFO - routes - Image quality: GOOD (0.92)
+21:58:15 - INFO - routes - Model certainty: HIGH (0.99)
+21:58:15 - INFO - routes - AI reliability: 83/100 (HIGH)
+21:59:07 - INFO - app - Starting ThyroLens AI API...
+21:59:15 - INFO - routes - Loading model from Hugging Face...
+21:59:18 - INFO - routes - Model loaded successfully
+21:59:23 - INFO - routes - Analyze request received for file: 1 cancer.jpg
+21:59:23 - INFO - processing - Preprocessing image of size: (480, 352) and mode: RGB
+21:59:24 - INFO - routes - Grad-CAM generated successfully using layer: depthwise_separable_conv_1
+21:59:24 - INFO - routes - Image quality: GOOD (0.93)
+21:59:25 - INFO - routes - Model certainty: MODERATE (0.52)
+21:59:25 - INFO - routes - AI reliability: 65/100 (MODERATE)

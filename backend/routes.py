@@ -244,7 +244,7 @@ async def get_report(file: UploadFile = File(...)):
         report_buffer.seek(0)
         
         # Return File
-        headers = {'Content-Disposition': 'attachment; filename="thyroid_analysis_report.docx"'}
+        headers = {'Content-Disposition': 'attachment; filename="thyrolens_analysis_report.docx"'}
         return StreamingResponse(
             report_buffer,
             headers=headers, 

@@ -1,8 +1,8 @@
-# ThyroCheck AI Model Card
+# ThyroLens AI Model Card
 
 ## 1. Model Overview
 
-ThyroCheck AI is a research and educational decision-support prototype for binary thyroid image classification. It returns a raw model score, optional calibrated probability, technical reliability signals, and Grad-CAM visualization.
+ThyroLens AI is a research and educational decision-support prototype for binary thyroid image classification. It returns a raw model score, optional calibrated probability, technical reliability signals, and Grad-CAM visualization.
 
 ## 2. Intended Use
 

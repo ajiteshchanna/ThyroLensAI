@@ -4,42 +4,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ThyroCheck AI | Advanced Thyroid Diagnostics</title>
+    <title>ThyroLens AI | Explainable Thyroid Image Classification</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/style.css?v=homepage-20260912">
 </head>
 
 <body>
     <header>
-        <div class="logo">
-            <i class="fas fa-microscope"></i>
-            <span>ThyroCheck AI</span>
+        <div class="site-container nav-inner">
+            <a class="logo" href="#home" aria-label="ThyroLens AI dashboard">
+                <i class="fas fa-microscope"></i>
+                <span>ThyroLens AI</span>
+            </a>
+            <nav aria-label="Primary navigation">
+                <a class="active" href="#home">Dashboard</a>
+                <a href="#analysis">Analysis</a>
+                <a href="#about">Research</a>
+            </nav>
         </div>
-        <nav>
-            <a href="#home">Dashboard</a>
-            <a href="#analysis">Analysis</a>
-            <a href="#about">Research</a>
-        </nav>
     </header>
 
     <main>
         <section class="hero" id="home">
-            <h1>Precision Thyroid <br>Diagnostics</h1>
-            <p>AI decision support with transparent technical reliability signals for thyroid image review.</p>
+            <div class="site-container">
+                <p class="eyebrow"><span></span> Research-oriented imaging workspace</p>
+                <h1>AI-Assisted Thyroid Image Analysis</h1>
+                <p class="hero-subtitle">Explainable insights with reliability-aware AI decision support.</p>
 
-            <div class="dz-container">
-                <div class="drop-zone" id="dropZone">
-                    <i class="fas fa-cloud-upload-alt dz-icon"></i>
-                    <p class="dz-text">Drag & Drop medical image</p>
-                    <p class="dz-subtext">Supports JPEG and PNG (Max 10MB)</p>
-                    <input type="file" id="fileInput" accept="image/*">
+                <div class="dz-container">
+                    <div class="drop-zone" id="dropZone">
+                        <div class="upload-icon" aria-hidden="true"><i class="fas fa-cloud-arrow-up"></i></div>
+                        <p class="dz-kicker">Start an analysis</p>
+                        <p class="dz-text">Upload a thyroid image</p>
+                        <p class="dz-subtext">Drag and drop your image here, or browse from your device</p>
+                        <button class="browse-button" id="browseButton" type="button">
+                            <i class="fas fa-folder-open" aria-hidden="true"></i>
+                            Browse Image
+                        </button>
+                        <p class="dz-meta">JPEG / PNG <span aria-hidden="true">·</span> Maximum 10 MB</p>
+                        <input type="file" id="fileInput" accept="image/jpeg,image/png">
+                    </div>
+                    <div class="medical-loader" id="loader" aria-label="Analyzing image"></div>
                 </div>
-                <div class="medical-loader" id="loader"></div>
             </div>
         </section>
 
-        <section class="results-section" id="resultsSection">
-            <h2 class="section-title">Diagnostic Insight</h2>
+        <section class="capabilities site-container" id="about" aria-labelledby="capabilities-title">
+            <div class="capabilities-heading">
+                <p class="eyebrow"><span></span> Built for careful review</p>
+                <h2 id="capabilities-title">A clearer view of the technical signals</h2>
+            </div>
+            <div class="capability-grid">
+                <article class="capability-card">
+                    <div class="capability-icon"><i class="fas fa-eye" aria-hidden="true"></i></div>
+                    <h3>Explainable AI</h3>
+                    <p>Visual explanations highlight image regions that influence the model output.</p>
+                </article>
+                <article class="capability-card">
+                    <div class="capability-icon"><i class="fas fa-shield-halved" aria-hidden="true"></i></div>
+                    <h3>Reliability-Aware Analysis</h3>
+                    <p>Technical reliability indicators assess image quality, similarity, and model confidence.</p>
+                </article>
+                <article class="capability-card">
+                    <div class="capability-icon"><i class="fas fa-flask" aria-hidden="true"></i></div>
+                    <h3>Research Prototype</h3>
+                    <p>Built for research and educational experimentation. Clinical review remains necessary.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="results-section" id="resultsSection" aria-labelledby="analysis-title">
+            <h2 class="section-title" id="analysis-title">Analysis workspace</h2>
 
             <div class="results-grid">
                 <!-- Original Scan -->
@@ -122,9 +157,11 @@
         </section>
     </main>
 
+    <footer><div class="site-container">ThyroLens AI <span aria-hidden="true">·</span> Research and educational prototype <span aria-hidden="true">·</span> Clinical review remains necessary.</div></footer>
+
     <div class="alert" id="customAlert"></div>
 
-    <script src="/static/app.js?v=reliability-20260909"></script>
+    <script src="/static/app.js?v=homepage-upload-20260912"></script>
 </body>
 
 </html>

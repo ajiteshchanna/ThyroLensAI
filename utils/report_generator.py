@@ -35,12 +35,12 @@ def generate_docx_report(image_buffer, prediction_label, confidence_score, confi
     header = section.header
     header_para = header.paragraphs[0]
     header_para.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-    run = header_para.add_run("THYROCHECK AI | AI DECISION SUPPORT")
+    run = header_para.add_run("THYROLENS AI | AI DECISION SUPPORT")
     run.font.size = Pt(9)
     run.font.color.rgb = RGBColor(0, 192, 163) # Emerald
     
     # 2. Title & Date
-    title = doc.add_heading('AI Decision Support Report', 0)
+    title = doc.add_heading('THYROLENS AI\nAI DECISION-SUPPORT REPORT', 0)
     title.alignment = WD_ALIGN_PARAGRAPH.CENTER
     
     meta_para = doc.add_paragraph()
@@ -128,7 +128,7 @@ def generate_docx_report(image_buffer, prediction_label, confidence_score, confi
     doc.add_page_break()
     doc.add_heading('4. Technical Methodology', level=1)
     doc.add_paragraph(
-        "This AI assessment was performed using ThyroCheck AI's FibonacciNet architecture. "
+        "This AI assessment was performed using ThyroLens AI's FibonacciNet architecture. "
         "The model utilizes Fibonacci-scaled filter counts (21, 34, 55, 89, 144, 233, 377) and Partial Connection "
         "Blocks (PCB) for optimal feature extraction from medical ultrasound signals. Interpretability is "
         "provided via Gradient-weighted Class Activation Mapping (Grad-CAM). Image quality uses resolution, "

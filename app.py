@@ -12,7 +12,7 @@ import uvicorn
 from backend.routes import router
 from utils.logger import logger
 
-app = FastAPI(title="Thyroid Cancer Detection API")
+app = FastAPI(title="ThyroLens AI API")
 
 # Mount static files
 app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
@@ -21,5 +21,5 @@ app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
 app.include_router(router)
 
 if __name__ == "__main__":
-    logger.info("Starting Thyroid Cancer Detection API...")
+    logger.info("Starting ThyroLens AI API...")
     uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)

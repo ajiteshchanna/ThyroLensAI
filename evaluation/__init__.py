@@ -1,1 +1,1 @@
-"""Reproducible evaluation helpers for ThyroCheck AI."""
+"""Reproducible evaluation helpers for ThyroLens AI."""

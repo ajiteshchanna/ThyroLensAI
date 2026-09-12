@@ -1,5 +1,6 @@
 const dropZone = document.getElementById('dropZone');
 const fileInput = document.getElementById('fileInput');
+const browseButton = document.getElementById('browseButton');
 const loader = document.getElementById('loader');
 const resultsSection = document.getElementById('resultsSection');
 const predBadge = document.getElementById('predBadge');
@@ -41,6 +42,11 @@ dropZone.addEventListener('drop', e => {
 
 fileInput.addEventListener('change', e => {
     handleFiles(e.target.files);
+});
+
+browseButton.addEventListener('click', event => {
+    event.stopPropagation();
+    fileInput.click();
 });
 
 async function handleFiles(files) {
@@ -142,7 +148,7 @@ downloadBtn.addEventListener('click', async () => {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `Thyroid_Report_${new Date().getTime()}.docx`;
+        a.download = `ThyroLens_Report_${new Date().getTime()}.docx`;
         document.body.appendChild(a);
         a.click();
         window.URL.revokeObjectURL(url);

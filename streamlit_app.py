@@ -22,7 +22,7 @@ from utils.image_quality import assess_image_quality
 from utils.reliability import calculate_reliability_with_embedding, extract_feature_embedding
 
 # --- Page Config ---
-st.set_page_config(page_title="Thyroid Cancer Detection", page_icon="🧬", layout="centered")
+st.set_page_config(page_title="ThyroLens AI", page_icon="🧬", layout="centered")
 st.markdown("""
     <style>
     .main { background-color: #0e1117; color: #fafafa; }
@@ -46,8 +46,8 @@ def load_model():
         return None
 
 def main():
-    st.title("Thyroid Cancer Detection System")
-    st.write("Upload a thyroid medical image (ultrasound/pathology) for AI-powered cancer detection")
+    st.title("ThyroLens AI")
+    st.write("Explainable thyroid image classification with reliability-aware AI decision support.")
 
     model = load_model()
     if not model:
@@ -133,7 +133,7 @@ def main():
                 st.download_button(
                     label="Download Report (DOCX)",
                     data=report,
-                    file_name="thyroid_analysis_report.docx",
+                    file_name="thyrolens_analysis_report.docx",
                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                 )
 

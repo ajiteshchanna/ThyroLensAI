@@ -11,7 +11,7 @@ const customAlert = document.getElementById('customAlert');
 function showAlert(message, type = 'info') {
     customAlert.textContent = message;
     customAlert.style.display = 'block';
-    customAlert.style.color = type === 'error' ? '#ff5252' : '#00c0a3';
+    customAlert.style.color = type === 'error' ? 'var(--text-primary)' : 'var(--text-secondary)';
     setTimeout(() => {
         customAlert.style.display = 'none';
     }, 5000);

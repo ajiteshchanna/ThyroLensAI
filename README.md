@@ -1,6 +1,6 @@
 # ThyroLens AI
 
-ThyroLens AI is a research and educational AI decision-support prototype for binary thyroid image classification. It combines a custom FibonacciNet model with Grad-CAM explainability, deterministic image-quality assessment, feature-space input similarity, probability calibration, and an engineering-level AI technical reliability score.
+ThyroLens AI is a research and educational AI decision support prototype for binary thyroid image classification. It combines a custom FibonacciNet model with Grad-CAM explainability, deterministic image-quality assessment, feature-space input similarity, probability calibration, and an engineering-level AI technical reliability score.
 
 ## Overview
 

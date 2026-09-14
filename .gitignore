@@ -12,4 +12,7 @@ cenv
 
 thyenv
 
-model artifacts
+model artifacts/*
+!model artifacts/
+!model artifacts/ood_reference.npz
+!model artifacts/calibration.json

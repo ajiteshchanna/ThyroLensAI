@@ -112,6 +112,10 @@ async function handleFiles(files) {
         document.getElementById('calibrationValue').textContent = calibration.status || 'NOT_AVAILABLE';
         document.getElementById('eceValue').textContent = calibration.ece == null ? '-' : `${(calibration.ece * 100).toFixed(2)}%`;
         document.getElementById('brierValue').textContent = calibration.brier_score == null ? '-' : calibration.brier_score.toFixed(3);
+        const artifactErrors = [similarity.error, calibration.error].filter(Boolean);
+        document.getElementById('reliabilityStatus').textContent = artifactErrors.length
+            ? 'Artifact unavailable: reliability artifacts could not be loaded.'
+            : '';
         document.getElementById('recommendation').textContent = reliability.recommendation || 'Clinical review is required.';
 
         // Show Results with Animation

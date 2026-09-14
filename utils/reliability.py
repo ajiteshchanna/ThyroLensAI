@@ -12,6 +12,7 @@ from utils.config import (
     RELIABILITY_ARTIFACT_DIR,
     RELIABILITY_CONFIG,
 )
+from utils.logger import logger
 
 
 _ARTIFACTS = None
@@ -25,15 +26,23 @@ def _load_artifacts():
     ood_path = artifact_dir / OOD_REFERENCE_FILENAME
     calibration_path = artifact_dir / CALIBRATION_FILENAME
     if not ood_path.exists() or not calibration_path.exists():
+        missing = [str(path) for path in (ood_path, calibration_path) if not path.exists()]
+        logger.error("Reliability artifacts unavailable; missing files: %s", ", ".join(missing))
         _ARTIFACTS = None
         return None
-    with np.load(ood_path) as ood:
-        ood_data = {
-            "mean": ood["mean"],
-            "inverse_covariance": ood["inverse_covariance"],
-            "threshold": float(ood["threshold"]),
-        }
-    _ARTIFACTS = {"ood": ood_data, "calibration": json.loads(calibration_path.read_text(encoding="utf-8"))}
+    try:
+        with np.load(ood_path) as ood:
+            ood_data = {
+                "mean": ood["mean"],
+                "inverse_covariance": ood["inverse_covariance"],
+                "threshold": float(ood["threshold"]),
+            }
+        calibration = json.loads(calibration_path.read_text(encoding="utf-8"))
+    except Exception:
+        logger.exception("Reliability artifacts failed to load from %s", artifact_dir)
+        _ARTIFACTS = None
+        raise
+    _ARTIFACTS = {"ood": ood_data, "calibration": calibration}
     return _ARTIFACTS
 
 
@@ -118,14 +127,15 @@ def calculate_reliability_with_embedding(model_score, image_quality, embedding):
             raise ValueError("Model embedding is unavailable")
         input_similarity = _input_similarity(embedding, artifacts)
     except Exception as exc:
-        input_similarity = {"status": "NOT_AVAILABLE", "error": str(exc)}
+        status = "ARTIFACT_UNAVAILABLE" if isinstance(exc, FileNotFoundError) else "NOT_AVAILABLE"
+        input_similarity = {"status": status, "error": str(exc)}
     try:
         artifacts = _ARTIFACTS or _load_artifacts()
         if artifacts is None:
             raise FileNotFoundError("Calibration artifact is unavailable")
         calibration = _calibration(model_score, artifacts)
     except Exception as exc:
-        calibration = {"status": "NOT_AVAILABLE", "error": str(exc)}
+        calibration = {"status": "ARTIFACT_UNAVAILABLE", "error": str(exc)}
 
     if input_similarity.get("score") is not None:
         factors["input_similarity"] = input_similarity["score"]

@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "method": "Platt scaling",
+  "slope": 1.036114349900706,
+  "intercept": 0.4328492788672251,
+  "brier_score": 0.0762171246655188,
+  "ece": 0.03643883758764205,
+  "sample_count": 623,
+  "class_counts": {
+    "0": 381,
+    "1": 242
+  },
+  "source": "deduplicated original Kaggle dataset",
+  "split_independence": "UNVERIFIABLE_FROM_HISTORICAL_TRAINING_MANIFEST",
+  "note": "Engineering calibration; historical model split was not persisted."
+}

@@ -1,3 +1,8 @@
+from pathlib import Path
+
+
+PROJECT_DIR = Path(__file__).resolve().parents[1]
+
 # HuggingFace Model Configuration
 REPO_ID = "Diveshj/thyroid_models"
 MODEL_FILENAME = "thyroid_cancer_model.keras"
@@ -15,7 +20,7 @@ RELIABILITY_CONFIG = {
 	"confidence": {"high": 0.8, "moderate": 0.5},
 }
 
-RELIABILITY_ARTIFACT_DIR = "model artifacts"
+RELIABILITY_ARTIFACT_DIR = PROJECT_DIR / "model artifacts"
 OOD_REFERENCE_FILENAME = "ood_reference.npz"
 CALIBRATION_FILENAME = "calibration.json"
 
